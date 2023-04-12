@@ -16,3 +16,10 @@ tasks:
         paths:
         - /usr/local/lib/python3.9/site-packages
     - reports/junit: test-reports/*.xml
+    # build and push a Docker image. You will need to add the credentials in Dashboard
+    - docker/build:
+        image: sahitiputcha/new_file_python
+        tags: ["${CI_COMMIT_SHA:0:8}", "${CI_REPO_BRANCH}", "latest"]
+        dockerfile: Dockerfile
+        context: hack
+        push: true
