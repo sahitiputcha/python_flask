@@ -23,3 +23,4 @@ tasks:
          push: true 
 
          tags: ["latest-v1"]
+
