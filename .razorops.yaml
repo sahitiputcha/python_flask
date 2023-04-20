@@ -1,27 +1,25 @@
 version: v2
-
 tasks:
-
-  unit-test:
-
-    runner: razorci/openjdk:11-buster
-
+  build:
+    runner: razorci/python:3.9
     steps:
-
     - checkout
-
+    - cache/pull: pip-deps-{{ checksum "requirements.txt" }}
+    - commands: 
+      - python -c 'import site; print(site.getsitepackages())'
+      - pip install -r requirements.txt
     - commands:
-
-      - |
-
-        mvn clean package
-
-           ls -a
-
+      - python test.py
+    - cache/push: 
+        key: pip-deps-{{ checksum "requirements.txt" }}
+        paths:
+        - /usr/local/lib/python3.9/site-packages
+    - reports/junit: test-reports/*.xml
+    # build and push a Docker image. You will need to add the credentials in Dashboard
     - docker/build:
-
-         image: razoropscode.jfrog.io/docker/spring
-
-         push: true 
-
-         tags: ["latest-v1"]
+        image: sahitiputcha/new_file_python
+        tags: ["${CI_COMMIT_SHA:0:8}", "${CI_REPO_BRANCH}", "latest"]
+        dockerfile: Dockerfile
+        context: hack
+        push: true
+        
