@@ -1,26 +1,25 @@
+version: v2
 tasks:
-
-  unit-test:
-
-    runner: razorci/openjdk:11-buster
-
+  build:
+    runner: razorci/python:3.9
     steps:
-
     - checkout
-
-    - commands:
-
+    
+    - commands: 
+      - python -c 'import site; print(site.getsitepackages())'
+      - pip install -r requirements.txt
       - |
 
         mvn clean package
 
            ls -a
+    - commands:
+      - python test.py
 
+    # build and push a Docker image. You will need to add the credentials in Dashboard
     - docker/build:
-
-         image: razoropscode.jfrog.io/docker/spring
-
-         push: true 
-
-         tags: ["latest-v1"]
-
+        image: teamprojectt.jfrog.io/docker/sahitiputcha/new_file_python
+        tags: ["${CI_COMMIT_SHA:0:8}", "${CI_REPO_BRANCH}", "latest"]
+        dockerfile: Dockerfile
+        context: hack
+        push: true
